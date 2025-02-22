@@ -129,6 +129,8 @@ int main() {
 
 ## 5. 
 
+答案：$4655$。
+
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
