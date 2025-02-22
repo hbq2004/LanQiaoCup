@@ -197,6 +197,8 @@ int main() {
 
 ## ~7. 
 
+答案：$2963628$。
+
 >【问题描述】
 > 
 > 如果一个字符串中只包含字符 0 和字符 1，则称为一个 01 串（包含全为 0 的串和全为 1 的串）。
@@ -212,7 +214,46 @@ $$
 $$
 
 ```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n = 24;
+
+    cout << (1 << 24) << '\n';
+
+    int ans = 0;
+    for (int i = 0; i < 1 << n; i++) {
+        int cnt[2] {};
+        for (int j = 0; j < 5; j++) { // 0 .. 4
+            cnt[i >> j & 1] += 1;
+        }
+        if (cnt[1] > 3) {
+            continue;
+        }
+        bool ok = true;
+        for (int j = 5; j < n; j++) {
+            cnt[i >> (j - 5) & 1] -= 1;
+            cnt[i >> j & 1] += 1;
+            if (cnt[1] > 3) {
+                ok = false;
+                break;
+            }
+        }
+        if (!ok) {
+            continue;
+        } else {
+            ans += 1;
+        }
+    }
+
+    cout << ans << '\n';
+
+    return 0;
+}
 ```
 
 ## 8. 
@@ -254,7 +295,7 @@ int main() {
         if (x > mx) {
             ans += 1;
         }
-        mx = max(mx, x);
+        mx = max(mx, x); // 待修改
     }
 
     cout << ans << '\n';
@@ -301,20 +342,120 @@ int main() {
 }
 ```
 
-## ~11. 
+## 11. 
 
 简单模拟。
 
 ```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m;
+    cin >> n;
+    vector<int> e(n);
+    for (auto &x : e) {
+        cin >> x;
+    }
+    cin >> m;
+    vector<int> v(m);
+    for (auto &x : v) {
+        cin >> x;
+    }
+    
+    int ans = 0;
+    for (int i = 0, j = 0; i < n && j < m; i++) {
+        while (j < m && e[i] > v[j]) {
+            j += 1;
+        }
+        if (j == m) {
+            break;
+        }
+        ans += 1;
+        j += 1;
+    }
+
+    cout << ans << '\n';
+
+    return 0;
+}
 ```
 
-## ~12.
+## 12.
 
 给定一个 $n \times m$ 的矩阵，在矩阵中找出一个的一个“十”字形状的区域，满足该区域内的值的和最大。
 
 
-
 ```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
+constexpr int inf = 1e9;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> a(n, vector<int>(m));
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> a[i][j];
+        }
+    }
+
+    vector<vector<int>> L(n, vector<int>(m)), R(n, vector<int>(m)), U(n, vector<int>(m)), D(n, vector<int>(m));
+
+    // 预处理: s = max(s, 0) + w
+    for (int i = 0; i < n; i++) {
+        int s = -inf;
+        for (int j = 0; j < m; j++) {
+            s = max(s, 0) + a[i][j];
+            L[i][j] = s;
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        int s = -inf;
+        for (int j = m - 1; j >= 0; j--) {
+            s = max(s, 0) + a[i][j];
+            R[i][j] = s;
+        }
+    }
+
+
+    for (int i = 0; i < m; i++) {
+        int s = -inf;
+        for (int j = 0; j < n; j++) {
+            s = max(s, 0) + a[j][i];
+            U[j][i] = s;
+        }
+    }
+
+    for (int i = 0; i < m; i++) {
+        int s = -inf;
+        for (int j = n - 1; j >= 0; j--) {
+            s = max(s, 0) + a[j][i];
+            D[j][i] = s;
+        }
+    }
+
+    // 枚举十字中心点
+    int ans = -inf;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            ans = max(ans, L[i][j] + R[i][j] + U[i][j] + D[i][j] - 3 * a[i][j]);
+        }
+    }
+
+    cout << ans << '\n';
+
+    return 0;
+}
 ```
